@@ -249,11 +249,9 @@ int main(int argc, char **argv) {
 		}
 	}
 
-	if(fwSelected==0){
-		for(int i=0;i< 32;i+=2){
-			*(workbuffer+0x11C+i)=cakes[i/2];
-			*(workbuffer+0x11C+i+1)=0;
-		}
+	for(int i=0;i< 32;i+=2){
+		*(workbuffer+0x11C+i)=cakes[i/2];
+		*(workbuffer+0x11C+i+1)=0;
 	}
 
 	userSettingsCRC(workbuffer);

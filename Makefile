@@ -153,7 +153,7 @@ endif
 .PHONY: $(BUILD) clean
 
 #---------------------------------------------------------------------------------
-$(BUILD): patches
+$(BUILD): source/patches.h
 	@mkdir -p $@
 	@$(MAKE) --no-print-directory -C $(BUILD) -f $(CURDIR)/Makefile
 
@@ -161,6 +161,9 @@ $(BUILD): patches
 clean:
 	@echo clean ...
 	@rm -fr $(BUILD) $(TARGET).elf $(TARGET).nds $(SOUNDBANK) patches.elf patches
+
+source/patches.h: patches
+	xxd -i patches | sed -e "s/patches_len/fSIZE/g" -e "s/patches/rawData/g" > source/patches.h
 
 patches:	patches.elf
 	$(OBJCOPY) -O binary $^ $@
