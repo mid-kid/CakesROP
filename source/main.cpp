@@ -128,6 +128,7 @@ int main(int argc, char **argv) {
 	int header;
 	rawDataOffset=0;
 	char cakes[]="YS:/Cakes.dat";
+    char custom[6][35];
 
 	aread(&header,1,4,patchfile);
 
@@ -177,8 +178,15 @@ int main(int argc, char **argv) {
 	}
 
 	int pressed,fwSelected=0,screenOffset=0;
+    int patch_count = patches.size() + 2;
 
 	showPatchList(patches,fwSelected);
+
+    // Custom filenames
+    iprintf ("\x1b[%d;6H", patches.size() + ITEMS_START_ROW);
+    iprintf ("%s", "4.x    ropCustom.txt");
+    iprintf ("\x1b[%d;6H", patches.size() + 1 + ITEMS_START_ROW);
+    iprintf ("%s", "9.x    ropCustom.txt");
 
 	while(1) {
 
@@ -199,8 +207,8 @@ int main(int argc, char **argv) {
 
 		if (pressed & KEY_A) break;
 
-		if (fwSelected < 0) 	fwSelected = patches.size() - 1;		// Wrap around to bottom of list
-		if (fwSelected > ((int)patches.size() - 1))		fwSelected = 0;		// Wrap around to top of list
+		if (fwSelected < 0) 	fwSelected = patch_count - 1;		// Wrap around to bottom of list
+		if (fwSelected > (patch_count - 1))		fwSelected = 0;		// Wrap around to top of list
 
 
 	}
@@ -208,8 +216,12 @@ int main(int argc, char **argv) {
 	iprintf ("\x1b[5;0H\x1b[J");
 
 
-	const patchEntry *selectedPatch = &patches.at(fwSelected);
-
+    const patchEntry *selectedPatch;
+    if (fwSelected < (int)patches.size()) {
+	    selectedPatch = &patches.at(fwSelected);
+    } else {
+        selectedPatch = &patches.at(fwSelected - (patch_count - patches.size()));
+    }
 
 	iprintf("Patching for %s\n\n",selectedPatch->description.c_str());
 
@@ -249,10 +261,98 @@ int main(int argc, char **argv) {
 		}
 	}
 
-	for(int i=0;i< 32;i+=2){
-		*(workbuffer+0x11C+i)=cakes[i/2];
-		*(workbuffer+0x11C+i+1)=0;
-	}
+    if (fwSelected < (int)patches.size()) {
+        for(int i=0;i< 32;i+=2){
+            *(workbuffer+0x11C+i)=cakes[i/2];
+            *(workbuffer+0x11C+i+1)=0;
+        }
+    } else {
+        // Load filename from ropCustom.txt
+        int csSelected=0;  //custom selected
+		int customLinesTotal=6;
+		int i=0;
+		char pathBegin[]="YS:/";
+		
+		
+		if(!fatInitDefault()){
+			iprintf("      fat init error\n");
+			halt();
+		}
+		
+		FILE *text=fopen("ropCustom.txt","r");
+		
+		if(!text){
+			iprintf("      ropCustom.txt load error\n      Does it exist?\n\n");
+			halt();
+		}
+		
+		for(i=0;i<customLinesTotal;i++){
+			fgets(custom[i],30,text);
+			if(!custom[i] || (custom[i][0] < 0x21) )break;
+			
+			for(int j=0; j < 30 ;j++){  //strip newline junk
+				if(custom[i][j]==0x0D || custom[i][j]==0x0A)
+					custom[i][j]=0;	
+			}
+			custom[i][25]=0;    //make damn sure it terminates
+		}
+		if(i==0){
+			iprintf("      ropCustom.txt read error\n");
+			iprintf("      invalid first line path\n");
+			halt();
+		}
+		
+		customLinesTotal=i;
+		
+		fclose(text);
+		
+		iprintf("\x1b[2J"); //clear console
+		iprintf("Custom filename list:");
+		
+		for(i=0;i<customLinesTotal;i++){
+			iprintf ("\x1b[%d;3H", i + ITEMS_START_ROW -8);
+			iprintf ("%s", custom[i]);
+		}
+		
+		
+		while(1) {
+
+			// Show cursor
+			iprintf ("\x1b[%d;0H[>", csSelected - screenOffset + ITEMS_START_ROW -8);
+
+			// Power saving loop. Only poll the keys once per frame and sleep the CPU if there is nothing else to do
+			do {
+				scanKeys();
+				pressed = keysDownRepeat();
+				swiWaitForVBlank();
+			} while (!pressed);
+
+			// Hide cursor
+			iprintf ("\x1b[%d;0H  ", csSelected - screenOffset + ITEMS_START_ROW -8);
+			if (pressed & KEY_UP) 		csSelected -= 1;
+			if (pressed & KEY_DOWN) 	csSelected += 1;
+
+			if (pressed & KEY_A) break;
+
+			if (csSelected < 0) 	csSelected =  customLinesTotal - 1;		// Wrap around to bottom of list
+			if (csSelected > (customLinesTotal - 1))		csSelected = 0;		// Wrap around to top of list
+
+
+		}
+		
+		for(int i=0; i < 4*2 ;i+=2){
+			*(workbuffer+0x11C+i)=pathBegin[i/2];
+			*(workbuffer+0x11C+i+1)=0;
+		}
+		
+		for(int i=0; i < 32 ;i+=2){
+			*(workbuffer+0x124+i)=custom[csSelected][i/2];
+			*(workbuffer+0x124+i+1)=0;
+		}
+		
+		*(workbuffer+0x142)=0; //ensure terminated string (again)
+		*(workbuffer+0x143)=0;
+    }
 
 	userSettingsCRC(workbuffer);
 	userSettingsCRC(workbuffer+256);
