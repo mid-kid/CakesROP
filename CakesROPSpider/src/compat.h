@@ -1,5 +1,5 @@
-#ifndef __appcompat_h__
-#define __appcompat_h__
+#ifndef COMPAT_H
+#define COMPAT_H
 
 #include <stdint.h>
 #include "types.h"

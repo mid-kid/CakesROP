@@ -98,16 +98,6 @@ void arm11_kernel_exploit_setup(void)
 	compat.app.memcpy(arm11_buffer, saved_heap_2, sizeof(saved_heap_2));
 	do_gshax_copy(mem_hax_mem + 0x4000, arm11_buffer, 0x20u);
 
-	// part 2: obfuscation or trick to clear code cache
-	/*
-	for(i = 0; i < 0x1000; i++)
-	{
-		arm11_buffer[i] = 0xE1A00000; // ARM NOP instruction
-	}
-	arm11_buffer[i - 1] = 0xE12FFF1E; // ARM BX LR instruction
-	nop_func = (void*) 0x009D2000 - 0x10000; // 0x10000 below current code
-	do_gshax_copy(0x19592000 - 0x10000, arm11_buffer, 0x10000);
-	nop_func();*/
 	rand_patt();
 }
 
@@ -181,7 +171,7 @@ s32 unpatch_pid(void)
 	create_thread_patch[3] = 0x8D;
 
 	// Allow all SVCs
-	*(u32*)(compat.svc_patch) = 0;
+	*(u32 *)(compat.svc_patch) = 0;
 
 	register u32 target_pid asm("r12");
 	if(compat.firmver < 0x022C0600) // Less than ver 8.0.0
@@ -230,7 +220,6 @@ int reinit_srv()
 void patch_srv_access()
 {
 	u32 old_pid;
-
 	if(svcGetProcessId(&old_pid, 0xFFFF8001) != 0)
 	{
 		svcExitThread();
@@ -238,6 +227,7 @@ void patch_srv_access()
 
 	// Set pid to 0
 	arm11_kernel_exploit_exec(patch_kernel);
+
 	// Reinit srv
 	if(reinit_srv() != 0)
 	{

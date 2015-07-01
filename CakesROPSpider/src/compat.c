@@ -60,7 +60,7 @@ void _memcpy(void* dst, const void* src, uint32_t size)
 
 void init_compat()
 {
-	const compat_app_s* app = NULL;
+	const compat_app_s *app = NULL;
 	uint32_t app_spec = *(uint32_t *)0x0010000C;
 	switch(app_spec)
 	{

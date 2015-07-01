@@ -1,8 +1,10 @@
 /*
   svc.h _ Syscall wrappers.
+  from ctrulib
 */
 
-#pragma once
+#ifndef SVC_H
+#define SVC_H
 #include "types.h"
 
 typedef enum {
@@ -229,3 +231,5 @@ Result svcMapProcessMemory(Handle process, u32 startAddr, u32 endAddr);
 Result svcUnmapProcessMemory(Handle process, u32 startAddr, u32 endAddr);
 Result svcBackdoor(s32 (*callback)(void));
 Result svcQueryProcessMemory(MemInfo* info, PageInfo* out, Handle process, u32 addr);
+
+#endif

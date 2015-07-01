@@ -1,5 +1,5 @@
-#ifndef _MKHAX_H
-#define _MKHAX_H
+#ifndef MKHAX_H
+#define MKHAX_H
 /*
  * Myria's libkhax implementation in C
  */

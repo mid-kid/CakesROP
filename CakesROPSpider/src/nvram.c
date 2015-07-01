@@ -1,7 +1,6 @@
 /*
  * Contributed to Cakes by an anonymous contributor
  * adapted from https://github.com/SciresM/memdump
- * 9.2.0-20E
  */
 
 #include "nvram.h"
@@ -13,7 +12,7 @@ static struct file *const patchf = (void*)0x08F10000;
 
 typedef struct index_s
 {
-	char* desc;
+	char *desc;
 	uint32_t offset;
 } index_s;
 
@@ -63,36 +62,33 @@ u32 calc_CRC16(u32 start, const void *dataptr, int count)
 
 void userSettingsCRC(void *buffer)
 {
-	u16 *slot = (u16*)buffer;
+	u16 *slot = buffer;
 	u16 CRC1 = calc_CRC16(0xFFFF, slot, 0x70);
 	u16 CRC2 = calc_CRC16(0xFFFF, &slot[0x3A], 0x8A);
-	slot[0x39] = CRC1; slot[0x7F] = CRC2;
+	slot[0x39] = CRC1;
+	slot[0x7F] = CRC2;
 }
 
 // Apply zoogie patches
-int apply(const uint8_t* patchBuf, uint8_t* work, int sel)
+int apply(const uint8_t *patchBuf, uint8_t *work, uint32_t sel)
 {
-	char cakes[] = "YS:/Cakes.dat";
-	uint32_t magic = *(uint32_t*)(patchBuf);
+	const wchar_t cakes[] = L"YS:/Cakes.dat";
+	uint32_t magic = *(uint32_t *)(patchBuf);
 	if(magic != 0x524f5050)
 		return -1;
 
-	uint32_t index_offset = *(uint32_t*)(patchBuf + 4);
-	index_s* indices = (index_s*)(patchBuf + index_offset);
+	uint32_t index_offset = *(uint32_t *)(patchBuf + 4);
+	index_s *indices = (index_s *)(patchBuf + index_offset);
 
-	patch_set_s* ps = (patch_set_s*)(patchBuf + indices[sel].offset);
+	patch_set_s *ps = (patch_set_s *)(patchBuf + indices[sel].offset);
 
 	for(uint32_t i = 0; i < ps->count; ++i)
 	{
-		patch_s* patch = (patch_s*)(patchBuf + ps->offset[i]);
+		patch_s *patch = (patch_s *)(patchBuf + ps->offset[i]);
 		compat.app.memcpy(work + patch->offset, &(patch->patch), patch->size);
 	}
 
-	for(int i = 0; i < 32; i += 2)
-	{
-		*(work + 0x11C + i) = cakes[i / 2];
-		*(work + 0x11C + i + 1) = 0;
-	}
+	compat.app.memcpy(work + 0x11C, cakes, 0x20);
 
 	// Fix CRCs
 	userSettingsCRC(work);
@@ -110,7 +106,7 @@ Result DumpNVRAM(Handle CFGNOR_handle)
 	u32 chunksize = 0x100;
 	u32 size = 128 * 1024;
 	u32 *buf = (u32 *) 0x18410000;
-	int *fileop_len = (void*) 0x08F01000;
+	int *fileop_len = (void *) 0x08F01000;
 
 	/* Mystery value 1. 3dbrew says it's "usually" 1. */
 	if((ret = CFGNOR_Initialize(CFGNOR_handle, 1)) == 0)
@@ -147,8 +143,8 @@ Result PatchNVRAM(Handle CFGNOR_handle)
 		u32 userSettingsOffset = 0x1FE00;
 
 		// Read current user settings
-		ret = CFGNOR_ReadData(CFGNOR_handle, userSettingsOffset, (u32*)buf, 0x100);
-		ret |= CFGNOR_ReadData(CFGNOR_handle, userSettingsOffset + 0x100, (u32*)(buf + 0x100), 0x100);
+		ret = CFGNOR_ReadData(CFGNOR_handle, userSettingsOffset, (u32 *)buf, 0x100);
+		ret |= CFGNOR_ReadData(CFGNOR_handle, userSettingsOffset + 0x100, (u32 *)(buf + 0x100), 0x100);
 
 		if(ret == 0)
 		{
@@ -157,9 +153,9 @@ Result PatchNVRAM(Handle CFGNOR_handle)
 
 			// ctrulib doesn't read/write more than 0x100 at a time. Better
 			// err on the side of caution here.
-			CFGNOR_WriteData(CFGNOR_handle, userSettingsOffset,         (u32*)buf, 0x100);
+			CFGNOR_WriteData(CFGNOR_handle, userSettingsOffset,         (u32 *)buf, 0x100);
 			buf += 0x100;
-			CFGNOR_WriteData(CFGNOR_handle, userSettingsOffset + 0x100, (u32*)buf, 0x100);
+			CFGNOR_WriteData(CFGNOR_handle, userSettingsOffset + 0x100, (u32 *)buf, 0x100);
 		}
 
 		CFGNOR_Shutdown(CFGNOR_handle);

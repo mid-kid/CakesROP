@@ -1,5 +1,5 @@
-#ifndef _NVRAM_H
-#define _NVRAM_H
+#ifndef NVRAM_H
+#define NVRAM_H
 
 #include "types.h"
 

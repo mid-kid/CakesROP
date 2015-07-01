@@ -1,5 +1,5 @@
-#ifndef __CTRU_H
-#define __CTRU_H
+#ifndef CTRU_H
+#define CTRU_H
 
 #include "types.h"
 

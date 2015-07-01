@@ -1,21 +1,12 @@
 /*
   types.h _ Various system types.
 */
-
-#pragma once
+#ifndef TYPES_H
+#define TYPES_H
 
 #include <stdint.h>
 #include <stdbool.h>
 #include <stddef.h>
-
-#define U64_MAX	UINT64_MAX
-
-typedef enum
-{
-	mediatype_NAND,
-	mediatype_SDMC,
-	mediatype_GAMECARD,
-} mediatypes_enum;
 
 typedef uint8_t u8;
 typedef uint16_t u16;
@@ -41,19 +32,6 @@ typedef u32 Handle;
 typedef s32 Result;
 typedef void (*ThreadFunc)(void *);
 
-#define BIT(n) (1U<<(n))
-
-//! aligns a struct (and other types?) to m, making sure that the size of the struct is a multiple of m.
-#define ALIGN(m)	__attribute__((aligned (m)))
-
-//! packs a struct (and other types?) so it won't include padding bytes.
-#define PACKED __attribute__ ((packed))
-
-struct PACKED KCodeSet {
-	/* 00 */ u8 padding1[0x5c - 0x00];
-	/* 5c */ u64 titleid;
-};
-
 struct KProcess4 {
 	/* 00 */ void *vtable;
 	/* 04 */ u8 padding1[0xA0 - 0x04];
@@ -72,27 +50,4 @@ struct KProcess8 {
 	/* b4 */ u32 pid;
 };
 
-struct PACKED SVCRegisterState {
-	u32 m_r4;
-	u32 m_r5;
-	u32 m_r6;
-	u32 m_r7;
-	u32 m_r8;
-	u32 m_r9;
-	u32 m_sl;
-	u32 m_fp;
-	u32 m_sp;
-	u32 m_lr;
-};
-
-struct PACKED KThread {
-	/* 00 */ u8 padding1[0x88 - 0x00];
-	/* 88 */ struct SVCRegisterState *svc_register_state;
-};
-
-struct PACKED SVCThreadArea {
-	/* 00 */ u8 svc_acl[0x10];
-	/* 10 */ u8 padding[0x18 - 0x10];
-	/* 18 */ struct SVCRegisterState svc_register_state;
-};
-
+#endif

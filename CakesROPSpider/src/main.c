@@ -1,7 +1,6 @@
 /*
  * Contributed to Cakes by an anonymous contributor
  * adapted from https://github.com/SciresM/memdump
- * 9.2.0-20E
  */
 #include "mkhax.h"
 
