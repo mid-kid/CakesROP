@@ -43,7 +43,8 @@ typedef struct compat_s
 } compat_s;
 
 void init_compat();
-
 extern compat_s compat;
+
+void _memcpy(void* dst, const void* src, uint32_t size);
 
 #endif

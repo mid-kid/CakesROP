@@ -20,7 +20,7 @@ typedef struct patch_s
 {
 	uint32_t size;
 	uint32_t offset;
-	uint32_t patch;
+	uint8_t patch[];
 } patch_s;
 
 typedef struct patch_set_s
@@ -50,7 +50,6 @@ u32 calc_CRC16(u32 start, const void *dataptr, int count)
 				do_bit = 1;
 
 			crc = crc >> 1;
-
 			if(do_bit)
 			{
 				crc = crc ^ (val[j] << (7 - j));
@@ -85,7 +84,7 @@ int apply(const uint8_t *patchBuf, uint8_t *work, uint32_t sel)
 	for(uint32_t i = 0; i < ps->count; ++i)
 	{
 		patch_s *patch = (patch_s *)(patchBuf + ps->offset[i]);
-		compat.app.memcpy(work + patch->offset, &(patch->patch), patch->size);
+		_memcpy(work + patch->offset, patch->patch, patch->size);
 	}
 
 	compat.app.memcpy(work + 0x11C, cakes, 0x20);

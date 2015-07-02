@@ -48,6 +48,7 @@ compat_app_s app_9x = {
 	.srv_handle = (Handle *)0x003D968C
 };
 
+// Slow ass but safe memcpy
 void _memcpy(void* dst, const void* src, uint32_t size)
 {
 	char *destc = (char *) dst;
