@@ -59,6 +59,15 @@ void _memcpy(void* dst, const void* src, uint32_t size)
 	}
 }
 
+void _memset(void* dst, int val, uint32_t size)
+{
+	char *destc = (char *) dst;
+	for(uint32_t i = 0; i < size; i++)
+	{
+		destc[i] = (char)val;
+	}
+}
+
 void init_compat()
 {
 	const compat_app_s *app = NULL;

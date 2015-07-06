@@ -4,12 +4,12 @@
 #include <stdint.h>
 #include "types.h"
 
-struct file {
+typedef struct {
 	s32 s;
 	u32 pos;
 	u32 size;
 	u32 unk[5];
-};
+} IFILE;
 
 #define FILE_R 0x01
 #define FILE_W 0x06
@@ -23,9 +23,9 @@ typedef struct compat_app_s
 	int (*svcControlMemory)(void **outaddr, unsigned int addr0, unsigned int addr1, unsigned int size, int operation, int permissions);
 	Result (*srvGetServiceHandle)(Handle* out, const char* name, unsigned int len);
 
-	int (*IFile_Open)(struct file *f, const short *path, int flags);
-	int (*IFile_Read)(struct file *f, unsigned int *read, void *buffer, unsigned int size);
-	int (*IFile_Write)(struct file *f, unsigned int *written, void *src, unsigned int len, unsigned int flush);
+	int (*IFile_Open)(IFILE *f, const short *path, int flags);
+	int (*IFile_Read)(IFILE *f, unsigned int *read, void *buffer, unsigned int size);
+	int (*IFile_Write)(IFILE *f, unsigned int *written, void *src, unsigned int len, unsigned int flush);
 
 	Handle* srv_handle;
 } compat_app_s;
@@ -46,5 +46,6 @@ void init_compat();
 extern compat_s compat;
 
 void _memcpy(void* dst, const void* src, uint32_t size);
+void _memset(void* dst, int val, uint32_t size);
 
 #endif

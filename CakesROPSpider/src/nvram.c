@@ -8,7 +8,7 @@
 #include "patches.h"
 #include "ctru.h"
 
-static struct file *const patchf = (void*)0x08F10000;
+#define PAYLOAD_FNAME_LEN 0x20
 
 typedef struct index_s
 {
@@ -87,7 +87,35 @@ int apply(const uint8_t *patchBuf, uint8_t *work, uint32_t sel)
 		_memcpy(work + patch->offset, patch->patch, patch->size);
 	}
 
-	compat.app.memcpy(work + 0x11C, cakes, 0x20);
+	uint8_t *name = work + 0x11C;
+
+	IFILE file;
+	_memset(&file, 0, sizeof(file));
+	if(compat.app.IFile_Open(&file, L"dmc:/ropCustom.txt", FILE_R) == 0)
+	{
+		const uint32_t maxPathLen = PAYLOAD_FNAME_LEN / 2;
+		const uint32_t maxFnameLen = maxPathLen - 4;
+
+		uint8_t *custName = (uint8_t *)(0x18410000 + 0x200);
+		_memset(custName, 0, PAYLOAD_FNAME_LEN);
+		_memcpy(custName, "YS:/", 4);
+
+		unsigned int read;
+		compat.app.IFile_Read(&file, &read, custName + 4, maxFnameLen);
+		for(uint32_t i = 0; i < maxPathLen; i++)
+		{
+			name[i * 2 + 1] = 0;
+			if(custName[i] == '\n' || custName[i] == '\r' || custName[i] == 0)
+			{
+				name[i * 2] = 0;
+				break;
+			}
+
+			name[i * 2] = custName[i];
+		}
+	}
+	else
+		compat.app.memcpy(name, cakes, PAYLOAD_FNAME_LEN);
 
 	// Fix CRCs
 	userSettingsCRC(work);
@@ -99,21 +127,20 @@ int apply(const uint8_t *patchBuf, uint8_t *work, uint32_t sel)
 Result DumpNVRAM(Handle CFGNOR_handle)
 {
 	Result ret = 0;
-	u32 pos = 0;
 	// chunk size 0x100 taken from ctrulib
 	// no idea why it's so low
 	u32 chunksize = 0x100;
 	u32 size = 128 * 1024;
 	u32 *buf = (u32 *) 0x18410000;
-	int *fileop_len = (void *) 0x08F01000;
 
 	/* Mystery value 1. 3dbrew says it's "usually" 1. */
 	if((ret = CFGNOR_Initialize(CFGNOR_handle, 1)) == 0)
 	{
-		patchf->pos = 0;
-		compat.app.IFile_Open(patchf, L"dmc:/nvram.bin", FILE_W);
+		IFILE file;
+		_memset(&file, 0, sizeof(file));
+		compat.app.IFile_Open(&file, L"dmc:/nvram.bin", FILE_W);
 
-		for(pos = 0; pos < size; pos += chunksize)
+		for(u32 pos = 0; pos < size; pos += chunksize)
 		{
 			if(size - pos < chunksize)
 				chunksize = size - pos;
@@ -121,7 +148,9 @@ Result DumpNVRAM(Handle CFGNOR_handle)
 			ret = CFGNOR_ReadData(CFGNOR_handle, pos, buf, chunksize);
 			if(ret != 0)
 				return ret;
-			compat.app.IFile_Write(patchf, fileop_len, buf, chunksize, 1);
+
+			unsigned int written;
+			compat.app.IFile_Write(&file, &written, buf, chunksize, 1);
 		}
 		compat.app.svcSleepThread(0x400000LL);
 	}
@@ -133,7 +162,6 @@ Result PatchNVRAM(Handle CFGNOR_handle)
 {
 	Result ret = 0;
 	u8 *buf = (u8 *) 0x18410000;
-	u8 *patchBuf = buf + 0x200;
 
 	// Mystery value 1. 3dbrew says it's "usually" 1.
 	if((ret = CFGNOR_Initialize(CFGNOR_handle, 1)) == 0)
