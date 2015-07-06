@@ -13,36 +13,35 @@
 typedef struct index_s
 {
 	char *desc;
-	uint32_t offset;
+	u32 offset;
 } index_s;
 
 typedef struct patch_s
 {
-	uint32_t size;
-	uint32_t offset;
-	uint8_t patch[];
+	u32 size;
+	u32 offset;
+	u8 patch[];
 } patch_s;
 
 typedef struct patch_set_s
 {
-	uint32_t magic;
-	uint32_t count;
-	uint32_t offset[];
+	u32 magic;
+	u32 count;
+	u32 offset[];
 } patch_set_s;
 
 /* Thanks, desmume */
-u32 calc_CRC16(u32 start, const void *dataptr, int count)
+u32 CRC16(u32 start, const void *dataptr, int count)
 {
 	const u8 *data = dataptr;
-	int i, j;
 	u32 crc = start & 0xffff;
 	const u16 val[8] =
 	{0xC0C1, 0xC181, 0xC301, 0xC601, 0xCC01, 0xD801, 0xF001, 0xA001};
-	for(i = 0; i < count; i++)
+	for(int i = 0; i < count; i++)
 	{
 		crc = crc ^ data[i];
 
-		for(j = 0; j < 8; j++)
+		for(int j = 0; j < 8; j++)
 		{
 			int do_bit = 0;
 
@@ -59,50 +58,50 @@ u32 calc_CRC16(u32 start, const void *dataptr, int count)
 	return crc;
 }
 
-void userSettingsCRC(void *buffer)
+void UserSettingsCRC(void *buffer)
 {
 	u16 *slot = buffer;
-	u16 CRC1 = calc_CRC16(0xFFFF, slot, 0x70);
-	u16 CRC2 = calc_CRC16(0xFFFF, &slot[0x3A], 0x8A);
-	slot[0x39] = CRC1;
-	slot[0x7F] = CRC2;
+	u16 crc1 = CRC16(0xFFFF, slot, 0x70);
+	u16 crc2 = CRC16(0xFFFF, &slot[0x3A], 0x8A);
+	slot[0x39] = crc1;
+	slot[0x7F] = crc2;
 }
 
 // Apply zoogie patches
-int apply(const uint8_t *patchBuf, uint8_t *work, uint32_t sel)
+int ApplyPatch(const u8 *patchBuf, u8 *work, u32 sel)
 {
 	const wchar_t cakes[] = L"YS:/Cakes.dat";
-	uint32_t magic = *(uint32_t *)(patchBuf);
+	u32 magic = *(u32 *)(patchBuf);
 	if(magic != 0x524f5050)
 		return -1;
 
-	uint32_t index_offset = *(uint32_t *)(patchBuf + 4);
+	u32 index_offset = *(u32 *)(patchBuf + 4);
 	index_s *indices = (index_s *)(patchBuf + index_offset);
 
 	patch_set_s *ps = (patch_set_s *)(patchBuf + indices[sel].offset);
 
-	for(uint32_t i = 0; i < ps->count; ++i)
+	for(u32 i = 0; i < ps->count; ++i)
 	{
 		patch_s *patch = (patch_s *)(patchBuf + ps->offset[i]);
 		_memcpy(work + patch->offset, patch->patch, patch->size);
 	}
 
-	uint8_t *name = work + 0x11C;
+	u8 *name = work + 0x11C;
 
 	IFILE file;
 	_memset(&file, 0, sizeof(file));
 	if(compat.app.IFile_Open(&file, L"dmc:/ropCustom.txt", FILE_R) == 0)
 	{
-		const uint32_t maxPathLen = PAYLOAD_FNAME_LEN / 2;
-		const uint32_t maxFnameLen = maxPathLen - 4;
+		const u32 maxPathLen = PAYLOAD_FNAME_LEN / 2;
+		const u32 maxFnameLen = maxPathLen - 4;
 
-		uint8_t *custName = (uint8_t *)(0x18410000 + 0x200);
+		u8 *custName = (u8 *)(0x18410000 + 0x200);
 		_memset(custName, 0, PAYLOAD_FNAME_LEN);
 		_memcpy(custName, "YS:/", 4);
 
 		unsigned int read;
 		compat.app.IFile_Read(&file, &read, custName + 4, maxFnameLen);
-		for(uint32_t i = 0; i < maxPathLen; i++)
+		for(u32 i = 0; i < maxPathLen; i++)
 		{
 			name[i * 2 + 1] = 0;
 			if(custName[i] == '\n' || custName[i] == '\r' || custName[i] == 0)
@@ -118,8 +117,8 @@ int apply(const uint8_t *patchBuf, uint8_t *work, uint32_t sel)
 		compat.app.memcpy(name, cakes, PAYLOAD_FNAME_LEN);
 
 	// Fix CRCs
-	userSettingsCRC(work);
-	userSettingsCRC(work + 0x100);
+	UserSettingsCRC(work);
+	UserSettingsCRC(work + 0x100);
 
 	return 0;
 }
@@ -175,7 +174,7 @@ Result PatchNVRAM(Handle CFGNOR_handle)
 
 		if(ret == 0)
 		{
-			if(apply(rawData, buf, compat.patch_sel))
+			if(ApplyPatch(rawData, buf, compat.patch_sel))
 				return -1;
 
 			// ctrulib doesn't read/write more than 0x100 at a time. Better
