@@ -94,13 +94,17 @@ void init_compat()
 		compat.create_thread_patch = 0xEFF83C97;
 		compat.svc_patch = 0xEFF827CC;
 		compat.firmver = kernel_version;
+
+		// mset 4.x
 		compat.patch_sel = 0;
 		break;
 	case 0x022E0000: // 2.26-0 9.0.0
 		compat.create_thread_patch = 0xDFF83837;
 		compat.svc_patch = 0xDFF82290;
 		compat.firmver = kernel_version;
-		compat.patch_sel = 1;
+
+		// mset 6.x
+		compat.patch_sel = 2;
 		break;
 	}
 }
