@@ -3,6 +3,9 @@ CakesSpiderROP
 
 Installs the mset rop using spider.
 
+## NOTE
+On **4.x firm** this will install the ROP for **mset 4.x**. Otherwise on **9.0 firm** this installs the ROP for **mset 6.x**.
+
 Usage
 ========
 ## Basic usage
