@@ -93,18 +93,43 @@ void init_compat()
 	case 0x02220000: // 2.34-0 4.1.0
 		compat.create_thread_patch = 0xEFF83C97;
 		compat.svc_patch = 0xEFF827CC;
-		compat.firmver = kernel_version;
 
 		// mset 4.x
 		compat.patch_sel = 0;
 		break;
+	case 0x02230600: // 2.35-6 5.0.0
+	case 0x02270400: // 2.39-4 7.0.0	
+		compat.create_thread_patch = 0xEFF8372F;
+		compat.svc_patch = 0xEFF822A8;
+
+		// mset 6.x
+		compat.patch_sel = 2;
+		break;
+	case 0x02240000: // 2.36-0 5.1.0
+	case 0x02250000: // 2.37-0 6.0.0
+	case 0x02260000: // 2.38-0 6.1.0
+	case 0x02280000: // 2.40-0 7.2.0			
+		compat.create_thread_patch = 0xEFF8372B;
+		compat.svc_patch = 0xEFF822A4;
+
+		// mset 6.x
+		compat.patch_sel = 2;
+		break;
+	case 0x022C0600: // 2.44-6 8.0.0
+		compat.create_thread_patch = 0xDFF83767;
+		compat.svc_patch = 0xDFF82294;
+
+		// mset 6.x
+		compat.patch_sel = 2;
+		break;
 	case 0x022E0000: // 2.26-0 9.0.0
 		compat.create_thread_patch = 0xDFF83837;
 		compat.svc_patch = 0xDFF82290;
-		compat.firmver = kernel_version;
 
 		// mset 6.x
 		compat.patch_sel = 2;
 		break;
 	}
+	
+	compat.firmver = kernel_version;
 }
