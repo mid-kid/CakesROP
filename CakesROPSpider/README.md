@@ -4,18 +4,20 @@ CakesSpiderROP
 Installs the mset rop using spider.
 
 ## NOTE
-On **4.x firm** this will install the ROP for **mset 4.x**. Otherwise on **9.0 firm** this installs the ROP for **mset 6.x**.
+Installs **mset 4.x** ROP on firm 4.x
+Installs **mset 6.x** ROP on firm 7.x~9.2
+All versions not mentioned above is unsupported.
 
 Usage
 ========
 ## Basic usage
 Copy code.bin to the root of your sdcard and point your spider to :
 
-* On 4.x firm :  
+* On 4.x firms :  
   http://dukesrg.no-ip.org/3ds/rop/?LoadCode4.dat  
   ![qr](https://chart.googleapis.com/chart?cht=qr&chs=220x220&chl=http://dukesrg.no-ip.org/3ds/rop/?LoadCode4.dat)
 
-* On 9.0~9.2 firm :  
+* On 7.x~9.2 firms :  
 http://dukesrg.no-ip.org/3ds/rop/?LoadCode.dat  
 ![qr](https://chart.googleapis.com/chart?cht=qr&chs=220x220&chl=http://dukesrg.no-ip.org/3ds/rop/?LoadCode.dat)
 
