@@ -4,9 +4,9 @@ CakesSpiderROP
 Installs the mset rop using spider.
 
 ## NOTE
-Installs **mset 4.x** ROP on firm 4.x
-Installs **mset 6.x** ROP on firm 7.1~9.2
-All versions not mentioned above is unsupported.
+Installs **mset 4.x** ROP on firm 4.x  
+Installs **mset 6.x** ROP on firm 7.1~9.2  
+All versions not mentioned above is not supported.  
 
 Usage
 ========
