@@ -30,39 +30,58 @@ typedef struct patch_set_s
 	u32 offset[];
 } patch_set_s;
 
-/* Thanks, desmume */
-u32 CRC16(u32 start, const void *dataptr, int count)
-{
-	const u8 *data = dataptr;
-	u32 crc = start & 0xffff;
-	const u16 val[8] =
-	{0xC0C1, 0xC181, 0xC301, 0xC601, 0xCC01, 0xD801, 0xF001, 0xA001};
-	for(int i = 0; i < count; i++)
-	{
-		crc = crc ^ data[i];
+// https://nfc-wisp.wikispaces.com/file/view/fcd-15693-3.pdf/271283012/fcd-15693-3.pdf
+// http://www.barrgroup.com/Embedded-Systems/How-To/CRC-Calculation-C-Code
+#define POLYNOMIAL 0x8005
 
+static inline u16 Rev16(u16 input)
+{
+	input = ((input >> 1) & 0x5555) | ((input & 0x5555) << 1);
+	input = ((input >> 2) & 0x3333) | ((input & 0x3333) << 2);
+	input = ((input >> 4) & 0x0F0F) | ((input & 0x0F0F) << 4);
+	input = ((input >> 8) & 0x00FF) | ((input & 0x00FF) << 8);
+
+	return input;
+}
+
+static inline u8 Rev8(u8 input)
+{
+	input = ((input >> 1) & 0x55) | ((input & 0x55) << 1);
+	input = ((input >> 2) & 0x33) | ((input & 0x33) << 2);
+	input = ((input >> 4) & 0x0F) | ((input & 0x0F) << 4);
+
+	return input;
+}
+
+// Reflected input/output CRC16 with poly 0x8005
+u32 CRC16(const void *data, size_t size)
+{
+	const u8* ucdata = (const u8 *) data;
+	u32 current_crc_value = 0xFFFF; // Preset
+	for(u32 i = 0; i < size; i++)
+	{
+		current_crc_value ^= Rev8(ucdata[i]) << 8;
 		for(int j = 0; j < 8; j++)
 		{
-			int do_bit = 0;
-
-			if(crc & 0x1)
-				do_bit = 1;
-
-			crc = crc >> 1;
-			if(do_bit)
+			if(current_crc_value & 0x8000)
 			{
-				crc = crc ^ (val[j] << (7 - j));
+				current_crc_value = (current_crc_value << 1) ^ POLYNOMIAL;
+			}
+			else
+			{
+				current_crc_value = (current_crc_value << 1);
 			}
 		}
 	}
-	return crc;
+
+	return Rev16(current_crc_value);
 }
 
 void UserSettingsCRC(void *buffer)
 {
 	u16 *slot = buffer;
-	u16 crc1 = CRC16(0xFFFF, slot, 0x70);
-	u16 crc2 = CRC16(0xFFFF, &slot[0x3A], 0x8A);
+	u16 crc1 = CRC16(slot, 0x70);
+	u16 crc2 = CRC16(&slot[0x3A], 0x8A);
 	slot[0x39] = crc1;
 	slot[0x7F] = crc2;
 }
