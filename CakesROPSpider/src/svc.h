@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014,2015 smealum
+ * Copyright (c) 2014,2015 173210, archshift, fincs, Lectem, mtheall, patois, plutoo, smealum, StapleButter, Steveice10, Subv, WinterMute, yuriks
  *
  * This software is provided 'as-is', without any express or implied
  * warranty. In no event will the authors be held liable for any damages
@@ -17,7 +17,8 @@
  *    misrepresented as being the original software.
  * 3. This notice may not be removed or altered from any source distribution.
  *
- * Modified from ctrulib https://github.com/smealum/ctrulib/
+ * Modified from ctrulib https://github.com/smealum/ctrulib/, files:
+ * - libctru/include/3ds/svc.h
  */
 
 #ifndef SVC_H

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014,2015 smealum
+ * Copyright (c) 2014,2015 fincs, plutoo, smealum, WinterMute, yellows8
  *
  * This software is provided 'as-is', without any express or implied
  * warranty. In no event will the authors be held liable for any damages

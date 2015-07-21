@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014,2015 smealum
+ * Copyright (c) 2014,2015 fincs, plutoo, yellows8
  *
  * This software is provided 'as-is', without any express or implied
  * warranty. In no event will the authors be held liable for any damages
@@ -26,7 +26,7 @@
 
 #include "types.h"
 
-// Copied from ctrulib cause static linking fail
+// Copied from ctrulib cause static linking fail for the spider environment
 u32* getThreadCommandBuffer(void);
 
 Result CFGNOR_Initialize(Handle CFGNOR_handle, u8 value);
