@@ -13,14 +13,12 @@
 /* undef to dump NVRAM */
 #define PATCH
 
-int uvl_entry();
+int main();
 
 __attribute__ ((section (".text.start"), naked))
-void uvl_start()
+void entry()
 {
-	asm volatile(".word 0xE1A00000");
-	uvl_entry();
-	asm volatile("bx lr");
+	main();
 }
 
 size_t strlen(const char *s)
@@ -33,7 +31,8 @@ size_t strlen(const char *s)
 	return sz;
 }
 
-int uvl_entry()
+
+int main()
 {
 	init_compat();
 	Result ret;
@@ -58,11 +57,6 @@ int uvl_entry()
 	svcCloseHandle(CFGNOR_handle);
 	svcExitThread();
 
-	return 0;
-}
-
-int uvl_exit(int status)
-{
 	return 0;
 }
 
