@@ -38,3 +38,7 @@ Credits
 ========
 * Anonymous contributor for the code
 * zoogie for the patch format
+* smealum, others for ctrulib
+* KARL, OSKA for bootstrap
+* Yifan Lu for service patch and Spider3DSTools
+* dukesrg for Spider3DSTools for 4.x firm, and hosting
