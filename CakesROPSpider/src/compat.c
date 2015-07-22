@@ -116,9 +116,9 @@ compat_app_s app_4x_kr = {
 	.svcControlMemory = (void *)0x00142FA0,
 	.srvGetServiceHandle = (void *)0x00114E0C,
 
-	.IFile_Open = (void *)0x0022E2B0,
-	.IFile_Read = (void *)0x00166FC8,
-	.IFile_Write = (void *)0x00167050,
+	.IFile_Open = (void *)0x0022F284,
+	.IFile_Read = (void *)0x001680F8,
+	.IFile_Write = (void *)0x00168180,
 
 	.srv_handle = (Handle *)0x003DA74C
 };
@@ -218,6 +218,13 @@ void _memset(void* dst, int val, uint32_t size)
 	}
 }
 
+enum rop_type
+{
+	MSET_4X = 0,
+	MSET_4X_DG,
+	MSET_6X
+};
+
 void init_compat()
 {
 	const compat_app_s *app = NULL;
@@ -279,29 +286,25 @@ void init_compat()
 		compat.create_thread_patch = 0xEFF83C97;
 		compat.svc_patch = 0xEFF827CC;
 
-		// mset 4.x
-		compat.patch_sel = 0;
+		compat.patch_sel = MSET_4X;
 		break;
 	case 0x02230600: // 2.35-6 5.0.0
 		compat.create_thread_patch = 0xEFF8372F;
 		compat.svc_patch = 0xEFF822A8;
 
-		// mset 4.x DG
-		compat.patch_sel = 1;
+		compat.patch_sel = MSET_4X_DG;
 		break;
 	case 0x02240000: // 2.36-0 5.1.0
 		compat.create_thread_patch = 0xEFF8372B;
 		compat.svc_patch = 0xEFF822A4;
 
-		// mset 4.x DG
-		compat.patch_sel = 1;
+		compat.patch_sel = MSET_4X_DG;
 		break;
 	case 0x02270400: // 2.39-4 7.0.0	
 		compat.create_thread_patch = 0xEFF8372F;
 		compat.svc_patch = 0xEFF822A8;
 
-		// mset 6.x
-		compat.patch_sel = 2;
+		compat.patch_sel = MSET_6X;
 		break;
 	case 0x02250000: // 2.37-0 6.0.0
 	case 0x02260000: // 2.38-0 6.1.0
@@ -309,28 +312,25 @@ void init_compat()
 		compat.create_thread_patch = 0xEFF8372B;
 		compat.svc_patch = 0xEFF822A4;
 
-		// mset 6.x
-		compat.patch_sel = 2;
+		compat.patch_sel = MSET_6X;
 		break;
 	case 0x022C0600: // 2.44-6 8.0.0
 		compat.create_thread_patch = 0xDFF83767;
 		compat.svc_patch = 0xDFF82294;
 
-		// mset 6.x
-		compat.patch_sel = 2;
+		compat.patch_sel = MSET_6X;
 		break;
 	case 0x022E0000: // 2.26-0 9.0.0
 		compat.create_thread_patch = 0xDFF83837;
 		compat.svc_patch = 0xDFF82290;
 
-		// mset 6.x
-		compat.patch_sel = 2;
+		compat.patch_sel = MSET_6X;
 		break;
 	}
 	
-	// Install ROP for 4.x DG
-	if(compat.patch_sel == 2 && !with_mset6)
-		compat.patch_sel = 1;
+	// Install ROP for 4.x DG, this is for CN/TW which doesn't have mset 6.x
+	if(compat.patch_sel == MSET_6X && !with_mset6)
+		compat.patch_sel = MSET_4X_DG;
 
 	compat.firmver = kernel_version;
 }
