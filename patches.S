@@ -51,7 +51,7 @@ patch_m4x_4x_1:
 m4x_4x_1_start: @ 0x279400
 @---------------------------------------------------------------------------------
 	.word 0x0010F2B9  @ pop_r0_r2
-	.word 0x00272BAE  @ r0 "YS:"
+	.word P4_LOAD_ADDRESS + (m4x_4x_1_YS - m4x_4x_1_start)
 	.word 0xBADC0DED  @ r2
 	.word 0x0018F19C  @ mount_sd("YS:") -> LDMFD           SP!, {R3-R5,PC}
 	.word 0x0010B690  @ r3
@@ -91,8 +91,11 @@ m4x_4x_1_start: @ 0x279400
 	.word 0x001AC100  @ r8
 	.word 0x001DDA22  @ r9
 	.word 0x0010538C  @ pop_r3
-	.word (P4_S2_LOAD_ADDRESS - (P4_LOAD_ADDRESS + m4x_4x_1_end - m4x_4x_1_start))
+	.word (P4_S2_LOAD_ADDRESS - (P4_LOAD_ADDRESS + m4x_4x_1_post_pivot - m4x_4x_1_start))
 	.word 0x00143D60  @ pivot -> ADD SP, SP, R3        LDR PC, [SP],#4
+m4x_4x_1_post_pivot:
+m4x_4x_1_YS:
+	.word 0x003A5359  @ YS:
 @---------------------------------------------------------------------------------
 m4x_4x_1_end:
 @---------------------------------------------------------------------------------
@@ -113,7 +116,7 @@ patch_m4x_dg_1:
 m4x_dg_1_start: @ 0x279400
 @---------------------------------------------------------------------------------
 	.word 0x0010F2B9  @ pop_r0_r2
-	.word 0x00272BAE  @ r0 "YS:"
+	.word P4_LOAD_ADDRESS + (m4x_dg_1_YS - m4x_dg_1_start)
 	.word 0xBADC0DED  @ r2
 	.word 0x0018F19C  @ mount_sd("YS:") -> LDMFD           SP!, {R3-R5,PC}
 	.word 0x0010B690  @ r3
@@ -153,8 +156,11 @@ m4x_dg_1_start: @ 0x279400
 	.word 0x001AC100  @ r8
 	.word 0x001DDA22  @ r9
 	.word 0x0010538C  @ pop_r3
-	.word (P4_S2_LOAD_ADDRESS - (P4_LOAD_ADDRESS + m4x_dg_1_end - m4x_dg_1_start))
+	.word (P4_S2_LOAD_ADDRESS - (P4_LOAD_ADDRESS + m4x_dg_1_post_pivot - m4x_dg_1_start))
 	.word 0x00143D60  @ pivot -> ADD SP, SP, R3        LDR PC, [SP],#4
+m4x_dg_1_post_pivot:
+m4x_dg_1_YS:
+	.word 0x003A5359  @ YS:
 @---------------------------------------------------------------------------------
 m4x_dg_1_end:
 @---------------------------------------------------------------------------------
