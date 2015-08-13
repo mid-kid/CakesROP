@@ -68,7 +68,7 @@ void showPatchList (const vector<patchEntry>& patchList, int startRow) {
 		const patchEntry* patch = &patchList.at(i + startRow);
 
 		// Set row
-		iprintf ("\x1b[%d;6H", i + ITEMS_START_ROW);
+		iprintf ("\x1b[%d;5H", i + ITEMS_START_ROW);
 		iprintf ("%s", patch->description.c_str());
 	}
 }
@@ -186,8 +186,8 @@ int main(int argc, char **argv) {
 	// Custom filenames
 	for(unsigned int i = 0; i < patches.size(); i++) {
 		const patchEntry* patch = &patches.at(i);
-		iprintf ("\x1b[%d;6H", patches.size() + i + ITEMS_START_ROW);
-		iprintf ("%.7sropCustom.txt", patch->description.c_str());
+		iprintf ("\x1b[%d;5H", patches.size() + i + ITEMS_START_ROW);
+		iprintf ("%.8sropCustom.txt", patch->description.c_str());
 	}
 
 	while(1) {
