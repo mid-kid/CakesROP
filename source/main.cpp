@@ -183,7 +183,7 @@ int main(int argc, char **argv) {
 	// Default Cakes.dat + custom
 	int patch_count = patches.size() * 2;
 
-	showPatchList(patches, DATNAME, 0);
+	showPatchList(patches, DISPNAME, 0);
 	showPatchList(patches, "ropCustom.txt", patches.size());
 
 	while(1) {

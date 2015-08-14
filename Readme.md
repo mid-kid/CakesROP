@@ -13,11 +13,14 @@ Requires devkitPro with libnds. Run make to compile.
 Custom rop and banner
 ========
  * Define ```DATNAME``` when calling the makefile to specify the dat name to be used as the default when installing NVRAM ROP.
+ * Define ```DISPNAME``` when calling the makefile to specify the name to be displayed
  * Define ```GRAPHICS``` when calling the makefile to specify the graphics folder containing your grit and png files to be used as the custom banner.
 e.g.
 
 ```
-make DATNAME=dat.dat GRAPHICS=data -C CakesROP
+make DATNAME=dat.dat GRAPHICS=data -C CakesROP  
+or  
+make DATNAME=whatever/dat.dat DISPNAME=dat.dat GRAPHICS=data -C CakesROP
 ```
 
 License
