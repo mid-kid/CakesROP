@@ -3,8 +3,11 @@ export PATH	:= $(DEVKITARM)/bin:$(PATH)
 CC=arm-none-eabi-gcc
 LD=arm-none-eabi-ld
 
+# parameter to be set externally
+DATNAME ?= Cakes.dat
+
 INCLUDES=-I../include
-DEFINES=
+DEFINES=-DDATNAME='"$(DATNAME)"'
 
 ARCH=-march=armv6k -mtune=mpcore -mlittle-endian
 CFLAGS=-fshort-wchar -fomit-frame-pointer -ffast-math -std=gnu99 -Os -ffunction-sections -g -mword-relocations $(ARCH) $(INCLUDES) $(DEFINES)

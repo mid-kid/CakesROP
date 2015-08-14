@@ -89,7 +89,7 @@ void UserSettingsCRC(void *buffer)
 // Apply zoogie patches
 int ApplyPatch(const u8 *patchBuf, u8 *work, u32 sel)
 {
-	const wchar_t cakes[] = L"YS:/Cakes.dat";
+	const wchar_t cakes[] = L"YS:/" DATNAME;
 	u32 magic = *(u32 *)(patchBuf);
 	if(magic != 0x524f5050)
 		return -1;

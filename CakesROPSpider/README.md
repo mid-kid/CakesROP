@@ -39,7 +39,7 @@ Requires devkitPro. Run make to compile.
 License
 ========
 This project is licensed under BSD 2-Clause. See LICENSE for details.  
-By contributing to the repo either through pull requests or comments you're agreeing to have your content be under the same license.
+By contributing to the repo either through pull requests or comments you're agreeing to have your content to be under the same license.
 If you require another license for your content please explicitly mention so in the pull request or comment.
 
 Credits

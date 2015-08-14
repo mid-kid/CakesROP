@@ -13,6 +13,7 @@ u8 workbuffer[1024] ALIGN(32);
 #define SCREEN_COLS 32
 #define ITEMS_PER_SCREEN 10
 #define ITEMS_START_ROW 12
+#define MAX_DATNAME_LEN 16
 
 using namespace std;
 
@@ -61,15 +62,16 @@ void saveFile(char *name, void *buffer, int size) {
 */
 
 //---------------------------------------------------------------------------------
-void showPatchList (const vector<patchEntry>& patchList, int startRow) {
+void showPatchList (const vector<patchEntry>& patchList, const char* datName, int offset) {
 //---------------------------------------------------------------------------------
 
-	for (int i = 0; i < ((int)patchList.size() - startRow) && i < ITEMS_PER_SCREEN; i++) {
-		const patchEntry* patch = &patchList.at(i + startRow);
+	for (unsigned int i = 0; i < patchList.size() && i < ITEMS_PER_SCREEN; i++) {
+		const patchEntry* patch = &patchList.at(i);
 
 		// Set row
-		iprintf ("\x1b[%d;5H", i + ITEMS_START_ROW);
+		iprintf ("\x1b[%d;5H", i + ITEMS_START_ROW + offset);
 		iprintf ("%s", patch->description.c_str());
+		iprintf (datName);
 	}
 }
 
@@ -127,8 +129,8 @@ int main(int argc, char **argv) {
 	int patchfile = 0;
 	int header;
 	rawDataOffset=0;
-	char cakes[]="YS:/Cakes.dat";
-    char custom[6][35];
+	char datName[]="YS:/" DATNAME;
+	char custom[6][35];
 
 	aread(&header,1,4,patchfile);
 
@@ -179,16 +181,10 @@ int main(int argc, char **argv) {
 
 	int pressed,fwSelected=0,screenOffset=0;
 	// Default Cakes.dat + custom
-    int patch_count = patches.size() * 2;
+	int patch_count = patches.size() * 2;
 
-	showPatchList(patches, fwSelected);
-
-	// Custom filenames
-	for(unsigned int i = 0; i < patches.size(); i++) {
-		const patchEntry* patch = &patches.at(i);
-		iprintf ("\x1b[%d;5H", patches.size() + i + ITEMS_START_ROW);
-		iprintf ("%.8sropCustom.txt", patch->description.c_str());
-	}
+	showPatchList(patches, DATNAME, 0);
+	showPatchList(patches, "ropCustom.txt", patches.size());
 
 	while(1) {
 
@@ -263,14 +259,14 @@ int main(int argc, char **argv) {
 		}
 	}
 
-    if (fwSelected < (int)patches.size()) {
-        for(int i=0;i< 32;i+=2){
-            *(workbuffer+0x11C+i)=cakes[i/2];
-            *(workbuffer+0x11C+i+1)=0;
-        }
-    } else {
-        // Load filename from ropCustom.txt
-        int csSelected=0;  //custom selected
+	if (fwSelected < (int)patches.size()) {
+		for(int i = 0;i < MAX_DATNAME_LEN * 2;i += 2){
+			*(workbuffer + 0x11C + i) = datName[i / 2];
+			*(workbuffer + 0x11C + i + 1) = 0;
+		}
+	} else {
+		// Load filename from ropCustom.txt
+		int csSelected=0;  //custom selected
 		int customLinesTotal=6;
 		int i=0;
 		char pathBegin[]="YS:/";
