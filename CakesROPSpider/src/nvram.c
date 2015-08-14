@@ -8,7 +8,7 @@
 #include "patches.h"
 #include "ctru.h"
 
-#define PAYLOAD_FNAME_LEN 0x20
+#define PAYLOAD_FNAME_LEN 0x30
 
 typedef struct index_s
 {
