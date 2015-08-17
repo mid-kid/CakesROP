@@ -338,18 +338,18 @@ int main(int argc, char **argv) {
 
 		}
 		
-		for(int i=0; i < 4*2 ;i+=2){
-			*(workbuffer+0x11C+i)=pathBegin[i/2];
-			*(workbuffer+0x11C+i+1)=0;
+		for(int i = 0; i < 4 * 2 ;i += 2){
+			*(workbuffer + 0x11C + i) = pathBegin[i / 2];
+			*(workbuffer + 0x11C + i + 1) = 0;
 		}
 		
-		for(int i=0; i < 32 ;i+=2){
-			*(workbuffer+0x124+i)=custom[csSelected][i/2];
-			*(workbuffer+0x124+i+1)=0;
+		for(int i = 0; i < (MAX_DATNAME_LEN - 4) * 2;i += 2){
+			*(workbuffer + 0x124 + i) = custom[csSelected][i / 2];
+			*(workbuffer + 0x124 + i + 1)=0;
 		}
 		
-		*(workbuffer+0x142)=0; //ensure terminated string (again)
-		*(workbuffer+0x143)=0;
+		*(workbuffer + 0x142)=0; //ensure terminated string (again)
+		*(workbuffer + 0x143)=0;
     }
 
 	userSettingsCRC(workbuffer);
