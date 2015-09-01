@@ -130,7 +130,7 @@ int main(int argc, char **argv) {
 	int header;
 	rawDataOffset=0;
 	char datName[MAX_DATNAME_LEN]="YS:/" DATNAME;
-	char custom[6][35];
+	char custom[6][MAX_DATNAME_LEN-4]={};
 
 	aread(&header,1,4,patchfile);
 
@@ -285,14 +285,15 @@ int main(int argc, char **argv) {
 		}
 		
 		for(i=0;i<customLinesTotal;i++){
-			fgets(custom[i],30,text);
-			if(!custom[i] || (custom[i][0] < 0x21) )break;
+			fgets(custom[i],MAX_DATNAME_LEN-4,text);
+			if(custom[i][0] < 0x21)break;
 			
-			for(int j=0; j < 30 ;j++){  //strip newline junk
-				if(custom[i][j]==0x0D || custom[i][j]==0x0A)
-					custom[i][j]=0;	
+			int j;
+			for(j=0; j < MAX_DATNAME_LEN-5; j++){  //strip newline junk
+				if(custom[i][j]==0x0D || custom[i][j]==0x0A || custom[i][j] == 0)
+					break;
 			}
-			custom[i][25]=0;    //make damn sure it terminates
+			custom[i][j]=0;    //make damn sure it terminates
 		}
 		if(i==0){
 			iprintf("      ropCustom.txt read error\n");

@@ -112,7 +112,7 @@ int ApplyPatch(const u8 *patchBuf, u8 *work, u32 sel)
 	if(compat.app.IFile_Open(&file, L"dmc:/ropCustom.txt", FILE_R) == 0)
 	{
 		const u32 maxPathLen = PAYLOAD_FNAME_LEN / 2;
-		const u32 maxFnameLen = maxPathLen - 4;
+		const u32 maxFnameLen = maxPathLen - 5;
 
 		u8 *custName = (u8 *)(0x18410000 + 0x200);
 		_memset(custName, 0, PAYLOAD_FNAME_LEN);
