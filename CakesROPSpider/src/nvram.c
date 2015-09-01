@@ -8,7 +8,7 @@
 #include "patches.h"
 #include "ctru.h"
 
-#define PAYLOAD_FNAME_LEN 0x30
+#define PAYLOAD_FNAME_LEN 0x34
 
 typedef struct index_s
 {
@@ -89,7 +89,7 @@ void UserSettingsCRC(void *buffer)
 // Apply zoogie patches
 int ApplyPatch(const u8 *patchBuf, u8 *work, u32 sel)
 {
-	const wchar_t cakes[] = L"YS:/" DATNAME;
+	const wchar_t cakes[PAYLOAD_FNAME_LEN / 2] = L"YS:/" DATNAME;
 	u32 magic = *(u32 *)(patchBuf);
 	if(magic != 0x524f5050)
 		return -1;

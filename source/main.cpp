@@ -13,7 +13,7 @@ u8 workbuffer[1024] ALIGN(32);
 #define SCREEN_COLS 32
 #define ITEMS_PER_SCREEN 10
 #define ITEMS_START_ROW 12
-#define MAX_DATNAME_LEN 24
+#define MAX_DATNAME_LEN 26
 
 using namespace std;
 
@@ -129,7 +129,7 @@ int main(int argc, char **argv) {
 	int patchfile = 0;
 	int header;
 	rawDataOffset=0;
-	char datName[]="YS:/" DATNAME;
+	char datName[MAX_DATNAME_LEN]="YS:/" DATNAME;
 	char custom[6][35];
 
 	aread(&header,1,4,patchfile);
@@ -261,7 +261,8 @@ int main(int argc, char **argv) {
 
 	if (fwSelected < (int)patches.size()) {
 		for(int i = 0;i < MAX_DATNAME_LEN * 2;i += 2){
-			*(workbuffer + 0x11C + i) = datName[i / 2];
+			char c = datName[i / 2];
+			*(workbuffer + 0x11C + i) = c;
 			*(workbuffer + 0x11C + i + 1) = 0;
 		}
 	} else {

