@@ -261,8 +261,7 @@ int main(int argc, char **argv) {
 
 	if (fwSelected < (int)patches.size()) {
 		for(int i = 0;i < MAX_DATNAME_LEN * 2;i += 2){
-			char c = datName[i / 2];
-			*(workbuffer + 0x11C + i) = c;
+			*(workbuffer + 0x11C + i) = datName[i / 2];
 			*(workbuffer + 0x11C + i + 1) = 0;
 		}
 	} else {
