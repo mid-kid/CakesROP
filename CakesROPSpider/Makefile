@@ -10,7 +10,7 @@ INCLUDES=-I../include
 DEFINES=-DDATNAME='"$(DATNAME)"'
 
 ARCH=-march=armv6k -mtune=mpcore -mlittle-endian
-CFLAGS=-fshort-wchar -fomit-frame-pointer -ffast-math -std=gnu99 -Os -ffunction-sections -g -mword-relocations $(ARCH) $(INCLUDES) $(DEFINES)
+CFLAGS=-fshort-wchar -fomit-frame-pointer -ffast-math -std=gnu99 -Werror -Os -ffunction-sections -g -mword-relocations $(ARCH) $(INCLUDES) $(DEFINES)
 LDFLAGS=-nostartfiles --specs=crs.specs -Wl,-gc-sections $(ARCH)
 OBJCOPY=arm-none-eabi-objcopy
 OCFLAGS=-R .compat
