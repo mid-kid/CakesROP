@@ -46,7 +46,7 @@ GAME_SUBTITLE2 := http://devitpro.org
 #---------------------------------------------------------------------------------
 ARCH := -marm -mthumb-interwork -march=armv5te -mtune=arm946e-s
 
-CFLAGS   := -Wno-multichar -g -Wall -O3\
+CFLAGS   := -Wno-multichar -g -Wall -Werror -O3\
             $(ARCH) $(INCLUDE) -DARM9 -DDATNAME='"$(DATNAME)"' -DDISPNAME='"$(DISPNAME)"'
 CXXFLAGS := $(CFLAGS) -fno-rtti -fno-exceptions -O3
 ASFLAGS  := -g $(ARCH)

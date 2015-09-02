@@ -129,7 +129,7 @@ int main(int argc, char **argv) {
 	int patchfile = 0;
 	int header;
 	rawDataOffset=0;
-	char datName[MAX_DATNAME_LEN]="YS:/" DATNAME;
+	char datName[MAX_DATNAME_LEN]="YS:/" DATNAME "\0";
 	char custom[6][MAX_DATNAME_LEN-4]={};
 
 	aread(&header,1,4,patchfile);

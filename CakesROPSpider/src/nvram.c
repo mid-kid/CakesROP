@@ -89,7 +89,7 @@ void UserSettingsCRC(void *buffer)
 // Apply zoogie patches
 int ApplyPatch(const u8 *patchBuf, u8 *work, u32 sel)
 {
-	const wchar_t cakes[PAYLOAD_FNAME_LEN / 2] = L"YS:/" DATNAME;
+	const wchar_t cakes[PAYLOAD_FNAME_LEN / 2] = L"YS:/" DATNAME "\0";
 	u32 magic = *(u32 *)(patchBuf);
 	if(magic != 0x524f5050)
 		return -1;
@@ -112,15 +112,14 @@ int ApplyPatch(const u8 *patchBuf, u8 *work, u32 sel)
 	if(compat.app.IFile_Open(&file, L"dmc:/ropCustom.txt", FILE_R) == 0)
 	{
 		const u32 maxPathLen = PAYLOAD_FNAME_LEN / 2;
-		const u32 maxFnameLen = maxPathLen - 5;
 
 		u8 *custName = (u8 *)(0x18410000 + 0x200);
-		_memset(custName, 0, PAYLOAD_FNAME_LEN);
+		_memset(custName, 0, maxPathLen);
 		_memcpy(custName, "YS:/", 4);
 
 		unsigned int read;
-		compat.app.IFile_Read(&file, &read, custName + 4, maxFnameLen);
-		for(u32 i = 0; i < maxPathLen; i++)
+		compat.app.IFile_Read(&file, &read, custName + 4, maxPathLen - 4 - 1/*reserve 1 byte for \0*/);
+		for(u32 i = 0; i < maxPathLen - 1; i++)
 		{
 			name[i * 2 + 1] = 0;
 			if(custName[i] == '\n' || custName[i] == '\r' || custName[i] == 0)
