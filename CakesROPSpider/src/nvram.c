@@ -8,7 +8,7 @@
 #include "patches.h"
 #include "ctru.h"
 
-#define PAYLOAD_FNAME_LEN 0x34
+#define PAYLOAD_FNAME_LEN 0x32
 
 typedef struct index_s
 {
@@ -115,7 +115,7 @@ int ApplyPatch(const u8 *patchBuf, u8 *work, u32 sel)
 		const u32 maxFnameLen = maxPathLen - 4;
 
 		u8 *custName = (u8 *)(0x18410000 + 0x200);
-		_memset(custName, 0, PAYLOAD_FNAME_LEN);
+		_memset(custName, 0, maxPathLen);
 		_memcpy(custName, "YS:/", 4);
 
 		unsigned int read;
