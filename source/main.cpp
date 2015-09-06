@@ -130,7 +130,7 @@ int main(int argc, char **argv) {
 	int header;
 	rawDataOffset=0;
 	char datName[MAX_DATNAME_LEN]="YS:/" DATNAME;
-	char custom[6][35];
+	char custom[6][MAX_DATNAME_LEN-4]={};
 
 	aread(&header,1,4,patchfile);
 
@@ -260,10 +260,12 @@ int main(int argc, char **argv) {
 	}
 
 	if (fwSelected < (int)patches.size()) {
-		for(int i = 0;i < MAX_DATNAME_LEN * 2;i += 2){
+		for(int i = 0;i < MAX_DATNAME_LEN * 2 - 2;i += 2){
 			*(workbuffer + 0x11C + i) = datName[i / 2];
 			*(workbuffer + 0x11C + i + 1) = 0;
 		}
+        *(workbuffer + 0x11C + MAX_DATNAME_LEN * 2 - 2)=0;
+        *(workbuffer + 0x11C + MAX_DATNAME_LEN * 2 - 1)=0;
 	} else {
 		// Load filename from ropCustom.txt
 		int csSelected=0;  //custom selected
@@ -285,14 +287,14 @@ int main(int argc, char **argv) {
 		}
 		
 		for(i=0;i<customLinesTotal;i++){
-			fgets(custom[i],30,text);
+			fgets(custom[i],MAX_DATNAME_LEN-4,text);
 			if(!custom[i] || (custom[i][0] < 0x21) )break;
 			
-			for(int j=0; j < 30 ;j++){  //strip newline junk
+			for(int j=0; j < MAX_DATNAME_LEN-4 ;j++){  //strip newline junk
 				if(custom[i][j]==0x0D || custom[i][j]==0x0A)
 					custom[i][j]=0;	
 			}
-			custom[i][25]=0;    //make damn sure it terminates
+			custom[i][MAX_DATNAME_LEN-5]=0;    //make damn sure it terminates
 		}
 		if(i==0){
 			iprintf("      ropCustom.txt read error\n");
@@ -343,13 +345,13 @@ int main(int argc, char **argv) {
 			*(workbuffer + 0x11C + i + 1) = 0;
 		}
 		
-		for(int i = 0; i < (MAX_DATNAME_LEN - 4) * 2;i += 2){
+		for(int i = 0; i < (MAX_DATNAME_LEN - 4) * 2 - 2;i += 2){
 			*(workbuffer + 0x124 + i) = custom[csSelected][i / 2];
 			*(workbuffer + 0x124 + i + 1)=0;
 		}
 		
-		*(workbuffer + 0x142)=0; //ensure terminated string (again)
-		*(workbuffer + 0x143)=0;
+		*(workbuffer + 0x11C + MAX_DATNAME_LEN * 2 - 2)=0; //ensure terminated string (again)
+		*(workbuffer + 0x11C + MAX_DATNAME_LEN * 2 - 1)=0;
     }
 
 	userSettingsCRC(workbuffer);
