@@ -13,7 +13,7 @@ u8 workbuffer[1024] ALIGN(32);
 #define SCREEN_COLS 32
 #define ITEMS_PER_SCREEN 10
 #define ITEMS_START_ROW 12
-#define MAX_DATNAME_LEN 26
+#define MAX_DATNAME_LEN 64
 
 using namespace std;
 
